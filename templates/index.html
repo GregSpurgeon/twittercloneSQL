@@ -1,0 +1,9 @@
+<button><a href='/signup/'>Sigup</a></button>
+<button><a href='/login/'>Login</a></button>
+{% if request.user.is_authenticated %}
+<hr>
+<h2>{{ twitteruser.username }}</h2>
+<h2>{{ twitteruser.display_name }}</h2>
+<hr>
+<button><a href='/logout/'>Logout</a></button>
+{% endif %}
