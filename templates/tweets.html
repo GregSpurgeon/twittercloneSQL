@@ -1,0 +1,7 @@
+<button><a href='/'>Home</a></button>
+{% for tweet in tweets %}
+<hr>
+  <h4><a href="/user/{{ tweet.user.id }}">{{ tweet.user.display_name }}</a></h4>
+    <p>{{ tweet.message }}</p>
+<hr>
+{% endfor %}

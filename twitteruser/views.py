@@ -1,31 +1,25 @@
-from django.shortcuts import render, reverse, HttpResponseRedirect, redirect
-from django.contrib.auth import authenticate, login, logout
-from twitteruser.forms import LoginForm, SignUpForm
+from django.shortcuts import render, redirect, reverse, HttpResponseRedirect
+from twitteruser.forms import SignUpForm
 from twitteruser.models import TwitterUser
+from tweet.models import Tweet
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
+@login_required
 def index_view(request):
     home = 'index.html'
     twitteruser = TwitterUser.objects.filter(id=request.user.id).first()
-    return render(request, home, {"twitteruser": twitteruser})
+    tweet = Tweet.objects.filter(user=request.user)
+    users_followers = TwitterUser.objects.get(username=request.user).following.all()
+    for follower in users_followers:
+        followers_tweets = Tweet.objects.filter(user=follower)
+        tweet = tweet | followers_tweets
+    tweet = tweet.order_by('-created_at')
 
-
-def login_view(request):
-    if request.method == "POST":
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            data = form.cleaned_data
-            user = authenticate(request,
-                                username=data['username'],
-                                password=data['password'])
-            if user:
-                login(request, user)
-                return HttpResponseRedirect(
-                    request.GET.get('next',
-                                    reverse('home')))
-    form = LoginForm()
-    return render(request, 'login_form.html', {"form": form})
+    return render(request, home, {"twitteruser": twitteruser,
+                                  "tweets": tweet,
+                                  "users_followers": users_followers})
 
 
 def signup_view(request):
@@ -43,6 +37,30 @@ def signup_view(request):
     return render(request, "sign_up_form.html", {'form': form})
 
 
-def logout_view(request):
-    logout(request)
-    return HttpResponseRedirect(reverse('home'))
+def following_view(request, user_id):
+    logged_in_user = TwitterUser.objects.get(username=request.user)
+    following_user = TwitterUser.objects.get(id=user_id)
+    logged_in_user.following.add(following_user)
+    logged_in_user.save()
+    return redirect('/')
+
+
+def unfollowing_view(request, user_id):
+    logged_in_user = TwitterUser.objects.get(username=request.user)
+    following_user = TwitterUser.objects.get(id=user_id)
+    logged_in_user.following.remove(following_user)
+    logged_in_user.save()
+    return redirect('/')
+
+
+def user_page(request, user_id):
+    curr_user = TwitterUser.objects.get(id=user_id)
+    tweets = Tweet.objects.filter(user=user_id).order_by('-created_at')
+    total_tweets = Tweet.objects.filter(user=user_id).count()
+    following_total = TwitterUser.objects.filter(following=user_id).count()
+    users_followers = TwitterUser.objects.get(username=request.user).following.all().count()
+    return render(request, 'user_page.html', {'user': curr_user,
+                                              'tweets': tweets,
+                                              'total': total_tweets,
+                                              'following_total': following_total,
+                                              'user_followers': users_followers})

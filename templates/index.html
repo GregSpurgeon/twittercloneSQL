@@ -1,9 +1,17 @@
 <button><a href='/signup/'>Sigup</a></button>
 <button><a href='/login/'>Login</a></button>
-{% if request.user.is_authenticated %}
-<hr>
-<h2>{{ twitteruser.username }}</h2>
-<h2>{{ twitteruser.display_name }}</h2>
-<hr>
+<button><a href='/tweetform/'>Post Tweet</a></button>
+<button><a href='/notification/'>Notifications</a></button>
+<button><a href='/'>Home</a></button>
 <button><a href='/logout/'>Logout</a></button>
-{% endif %}
+<button><a href='/user/{{ request.user.id}}'>My Profile</a></button>
+<hr>
+<h2>Hello, {{ twitteruser.display_name }}</h2>
+{% for tweet in tweets %}
+<hr>
+  <h4><a href="/user/{{ tweet.user.id }}">{{ tweet.user.display_name }}</a></h4>
+    <p>{{ tweet.message }}</p>
+    <div>{{ tweet.created_at }}</div>
+    <a href="/tweets/{{ tweet.id }}">View this tweet</a>
+{% endfor %}
+<hr>

@@ -1,0 +1,14 @@
+{% if request.user.is_authenticated == False %}
+<h2>you must be logged-in to post a tweet </h2>
+<a href='/login/'>Login</a>
+{% endif %}
+
+{% if request.user.is_authenticated %}
+    <form method="POST">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <input type="submit" value="Submit">
+</form>
+
+<a href="/">homepage</a>
+{% endif %}

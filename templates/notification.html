@@ -1,0 +1,5 @@
+<button><a href='/'>Home</a></button>
+{% for notification in notifications %}
+<h2>{{ notification.tweet.message }}</h2>
+<p>{{ notification.tweet.user }}</p>
+{%endfor%}

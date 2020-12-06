@@ -1,0 +1,13 @@
+<button><a href='/'>Home</a></button>
+<h1>{{ user.display_name }}</a></h1>
+<div>Posted Tweets: {{ total }}</div>
+<div>Following users: {{ user_followers }}</div>
+<br>
+<button><a href='/following/{{ user.id }}'>Follow</a></button>
+<button><a href='/unfollowing/{{ user.id }}'>Unfollow</a></button>
+{% for tweet in tweets %}
+<hr>
+  <h3>{{tweet.message}}</h3>
+  <p>{{ tweet.created_at }}</p>
+  <a href="/tweets/{{ tweet.id }}">View this tweet</a>
+{% endfor %}
