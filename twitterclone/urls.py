@@ -15,7 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from twitteruser.views import index_view, signup_view, following_view, unfollowing_view, user_page
+from twitteruser.views import index_view, SignUpView, FollowingView, UnfollowingView, UserPage
 from authentication.views import login_view, logout_view
 from tweet.views import create_tweet_view, tweets_view
 from notification.views import notification_view
@@ -23,13 +23,13 @@ from notification.views import notification_view
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', index_view, name="home"),
-    path("signup/", signup_view),
+    path("signup/", SignUpView.as_view()),
     path("login/", login_view),
     path('logout/', logout_view),
     path('tweetform/', create_tweet_view),
-    path('following/<int:user_id>/', following_view),
-    path('unfollowing/<int:user_id>/', unfollowing_view),
+    path('following/<int:user_id>/', FollowingView.as_view()),
+    path('unfollowing/<int:user_id>/', UnfollowingView.as_view()),
     path('tweets/<int:tweet_id>/', tweets_view),
-    path('user/<int:user_id>/', user_page, name='users_page'),
+    path('user/<int:user_id>/', UserPage.as_view(), name='users_page'),
     path('notification/', notification_view),
 ]
