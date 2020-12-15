@@ -1,63 +1,63 @@
 Query to create a table for twitterusers
-
+    CREATE TABLE twitteruser(id SERIAL NOT NULL PRIMARY KEY,username VARCHAR(50)NOT NULL,password VARCHAR(50)NOT NULL,displayname VARCHAR(50)NOT NULL);
 
 
 Query to create a table for tweets
-
+    CREATE TABLE tweet(id SERIAL NOT NULL PRIMARY KEY,user_id INT NOT NULL,message VARCHAR(140),created_at TIMESTAMPTZ NOT NULL);
 
 
 Query to create a table for notifications
-
+    CREATE TABLE notification (id SERIAL NOT NULL PRIMARY KEY, tweet_id INT NOT NULL, sent_from VARCHAR(50), user_mentioned VARCHAR(50), message_seen BOOL DEFAULT 'f');
 
 Query to create a new user (username: steve, password: hunter2, display name: steve-o)
-
+    INSERT INTO twitteruser(username, password, displayname) VALUES('steve', 'hunter2', 'steve-o');
 
 
 Query to create two new users at once: 
  -username: dave, password: asdf, display name: davey
  -username: bob, password: qwer, display name: bobbinator
- 
+    INSERT INTO twitteruser(username, password, displayname) VALUES ('dave', 'asdf', 'davey'),('bob', 'qwer', 'bobbinator');
  
  
 Query to get the username and password of twitteruser ID 1
-
+    SELECT username,password FROM twitteruser WHERE id=1;
 
 
 Query to get the ID of a user by the username of dave
-
+    SELECT id FROM twitteruser WHERE username='dave';
 
 
 Query to create a new tweet written by the user with the username steve (yes, you have to get the ID of Steve first -- hint: subqueries are your friend)
-
+    INSERT INTO tweet (user_id, message, created_at) VALUES ((SELECT id FROM twitteruser WHERE username='steve'),'this is my first tweet', (SELECT NOW()));
 
 
 Query to get the count of tweets by username steve (hint: subqueries are your friend)
-
+    SELECT COUNT(id) FROM tweet WHERE user_id=(SELECT id FROM twitteruser WHERE username='steve');
 
 
 Query to get the date and text of all tweets by username steve (hint: subqueries are your friend)
-
+    SELECT created_at,message FROM tweet WHERE user_id=(SELECT id FROM twitteruser WHERE username='steve');
 
 
 Query to get the username and password of the username bob
-
+    SELECT username, password FROM twitteruser WHERE username='bob';
 
 
 Query to create a notification for username bob using the tweet written by username steve (hint: subqueries are your friend)
-
+    INSERT INTO notification (tweet_id, sent_from, user_mentioned, message_seen) VALUES (3, (SELECT username FROM twitteruser WHERE id=1), (SELECT username FROM twitteruser WHERE displayname='bobbinator'), FALSE);
 
 
 Query to get all IDs of notifications for bob (hint: subqueries are your friend)
-
+    SELECT id FROM notification WHERE user_mentioned='bob';
 
 EC: 
 
 Extra Credit, 1pt: Query to delete a tweet starting when you already know the ID (use 1)
-
+    DELETE FROM tweet WHERE id=1;
 
 
 Extra Credit: 2pts: Single query to delete all the tweets belonging to username bob
-
+    DELETE FROM tweet WHERE user_id=(SELECT id FROM twitteruser  WHERE username='bob');
 
 
 Extra Credit: 5pts: Single query to output:
@@ -65,3 +65,5 @@ Extra Credit: 5pts: Single query to output:
     username of the person who wrote the tweet that triggered the notification
     text of the tweet
     ...where the only piece of information you start with is the display name of Steve; "steve-o"
+            
+        SELECT sent_from, user_mentioned FROM notification WHERE user_mentioned=(SELECT username from twitteruser WHERE displayname='steve-o');
