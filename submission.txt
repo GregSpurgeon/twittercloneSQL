@@ -50,6 +50,15 @@ Query to create a notification for username bob using the tweet written by usern
 Query to get all IDs of notifications for bob (hint: subqueries are your friend)
     SELECT id FROM notification WHERE user_mentioned='bob';
 
+Query to update Steve's display name to "steviethewonderdude"
+    UPDATE twitteruser SET displayname='steviethewonderdude' WHERE username='steve';
+
+Single query to update Dave's display name to "DMG" and his password to "iamthedmg"
+    UPDATE twitteruser SET displayname='DMG', password='iamthedmg' WHERE username='dave';
+
+Query to use the ORDER BY attribute to sort the content of the tweets table by newest tweets first (sort on the created_at field)
+    SELECT created_at FROM tweet ORDER BY created_at DESC;
+    
 EC: 
 
 Extra Credit, 1pt: Query to delete a tweet starting when you already know the ID (use 1)
@@ -65,5 +74,4 @@ Extra Credit: 5pts: Single query to output:
     username of the person who wrote the tweet that triggered the notification
     text of the tweet
     ...where the only piece of information you start with is the display name of Steve; "steve-o"
-            
-        SELECT sent_from, user_mentioned FROM notification WHERE user_mentioned=(SELECT username from twitteruser WHERE displayname='steve-o');
+                  
